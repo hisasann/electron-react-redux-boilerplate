@@ -1,0 +1,30 @@
+{
+  "name": "express-browserSync-boilerplate",
+  "version": "1.0.0",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "TweenJS": "*",
+    "PreloadJS": "*",
+    "SoundJS": "~0.6.1",
+    "EaselJS": "0.7.1",
+    "eventemitter2": "~0.4.14",
+    "velocity": "~1.2.3",
+    "jquery": "~2.1.4",
+    "react": "~0.14.2",
+    "lodash": "~3.10.1"
+  }
+}

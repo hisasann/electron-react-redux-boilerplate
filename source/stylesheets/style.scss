@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+@import "compass";
+@import "compass/css3";
+
+// 変数
+// サポートベンダープレフィックス
+$animation-support: -moz, -webkit, -o, -ms, not -khtml;
+$base_okamisan_zIndex: 1;
+$base_ojisan_zIndex: 1;
+$base_gacha_zIndex: 10;
+$base_loading_zIndex: 100;
+
+@function color($hoge) {
+  @return #777777;
+}
+
+body {
+  color: color(blue);
+}
+
