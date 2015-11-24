@@ -1,4 +1,24 @@
+import url from 'url';
+
 module.exports = {
+  browserSync: {
+    port: 4567,
+    server: {
+      baseDir: './build/',
+      middleware: [
+        (req, res, next) => {
+          const fileName = url.parse(req.url);
+
+          // リロード時に404にならないようにrewrite
+          if(/\/(routing|factor|cv|imagescale)/.test(fileName.pathname)){
+            req.url = '/index.html';
+          }
+
+          return next();
+        }
+      ]
+    }
+  },
   browserify: {
     input: './source/javascripts/*.js',
     output: './build/javascripts/'
@@ -15,9 +35,7 @@ module.exports = {
       './bower_components/eventemitter2/lib/eventemitter2.js',
       './bower_components/jquery/dist/jquery.js',
       './bower_components/velocity/velocity.js',
-      './bower_components/lodash/lodash.js',
-      './bower_components/react/react.js',
-      './source/javascripts/lib/react-dom.js'
+      './bower_components/lodash/lodash.js'
     ],
     dest: './build/javascripts/'
   },
