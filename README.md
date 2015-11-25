@@ -1,4 +1,4 @@
-:lipstick: electron-react-redux-router :lipstick:
+:lipstick: electron-react-redux-boilerplate :lipstick:
 ===============
 
 ## Overview
@@ -57,8 +57,13 @@ via [http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d](http://qiita.com/Quramy
 
 ## React / Flux
 
-flux-diagram.png
-flux-unidir-ui-arch.jpg
+<p align="center">
+  <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-flux-diagram.png">
+</p>
+
+<p align="center">
+  <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-flux-unidir-ui-arch.jpg">
+</p>
 
 one-way data flow
 
@@ -66,6 +71,9 @@ via [React.js architecture - Flux VS Reflux](http://blog.krawaller.se/posts/reac
 
 ## React / Redux
 
+<p align="center">
+  <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-redux-unidir-ui-arch.jpg">
+</p>
 redux-unidir-ui-arch.jpg
 
 ### Entry Point
