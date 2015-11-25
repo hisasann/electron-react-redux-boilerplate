@@ -9,12 +9,13 @@ import Error from '../components/Error'
 
 class App extends Component {
   render() {
-    const { increment, incrementIfOdd, incrementAsync, decrement, counter, pathname } = this.props;
+    const { pushState, increment, incrementIfOdd, incrementAsync, decrement, counter, pathname } = this.props;
     const { errorMessage, resetErrorMessage, showErrorMessage, showErrorMessageDelayed } = this.props;
 
     return (
       <div>
         <Counter
+          pushState={pushState}
           increment={increment}
           incrementIfOdd={incrementIfOdd}
           incrementAsync={incrementAsync}
@@ -33,6 +34,7 @@ class App extends Component {
 }
 
 App.propTypes = {
+  pushState: PropTypes.func.isRequired,
   increment: PropTypes.func.isRequired,
   incrementIfOdd: PropTypes.func.isRequired,
   incrementAsync: PropTypes.func.isRequired,
@@ -52,7 +54,8 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(_.assign(CounterActions, ErrorActions), dispatch)
+  // {pushState} https://github.com/rackt/redux-router/issues/79
+  return bindActionCreators(_.assign(CounterActions, ErrorActions, {pushState}), dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

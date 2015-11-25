@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import { Link, Navigation } from 'react-router'
 import { connect } from 'react-redux'
 
 // React.Componentについて
@@ -12,6 +12,11 @@ import { connect } from 'react-redux'
 class Counter extends Component {
   constructor(props) {
     super(props)
+    this.routing = this.routing.bind(this)
+  }
+
+  routing() {
+    this.props.pushState(null, '/routing')
   }
 
   render() {
@@ -31,6 +36,8 @@ class Counter extends Component {
         {' '}
         <button onClick={() => incrementAsync()}>Increment async</button>
         {' '}
+        <button onClick={this.routing}>routing</button>
+        {' '}
         <Link to='/routing'>routing</Link>
       </div>
     )
@@ -38,6 +45,7 @@ class Counter extends Component {
 }
 
 Counter.propTypes = {
+  pushState: PropTypes.func.isRequired,
   increment: PropTypes.func.isRequired,
   incrementIfOdd: PropTypes.func.isRequired,
   incrementAsync: PropTypes.func.isRequired,
