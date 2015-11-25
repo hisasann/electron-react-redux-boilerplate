@@ -2,15 +2,26 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import * as CounterActions from '../actions/counter'
+
+// React.Componentについて
+// constructorにpropsが引数として渡ってくるのでそれを使って必要に応じてstateの初期化をする。
+// getInitialStateは使うことができません。(warnが出ます)
+// Autobindingはされなくなったので明示的にthis.onClick.bind(this)のようにする必要があります。
+// via http://blog.koba04.com/post/2015/01/28/published-react-v0.13.0-beta1/
 
 class Counter extends Component {
+  constructor(props) {
+    super(props)
+  }
+
   render() {
-    const { increment, incrementIfOdd, incrementAsync, decrement, counter } = this.props;
+    const { increment, incrementIfOdd, incrementAsync, decrement, counter, pathname } = this.props;
 
     return (
-      <p>
-        Clicked: {counter} times
+      <div>
+        <p>pathname: {pathname}</p>
+        {' '}
+        <p>Clicked: {counter} times</p>
         {' '}
         <button onClick={increment}>+</button>
         {' '}
@@ -21,7 +32,7 @@ class Counter extends Component {
         <button onClick={() => incrementAsync()}>Increment async</button>
         {' '}
         <Link to='/routing'>routing</Link>
-      </p>
+      </div>
     )
   }
 }
@@ -31,19 +42,8 @@ Counter.propTypes = {
   incrementIfOdd: PropTypes.func.isRequired,
   incrementAsync: PropTypes.func.isRequired,
   decrement: PropTypes.func.isRequired,
-  counter: PropTypes.number.isRequired
+  counter: PropTypes.number.isRequired,
+  pathname: PropTypes.string.isRequired
 };
 
-function mapStateToProps(state) {
-  console.log(state.router.location);
-
-  return {
-    counter: state.counter
-  }
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(CounterActions, dispatch)
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Counter)
+export default Counter

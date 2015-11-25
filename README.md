@@ -1,4 +1,4 @@
-:lipstick: express-browserSync-boilerplate :lipstick:
+:lipstick: electron-react-redux-router :lipstick:
 ===============
 
 ## Overview
