@@ -1,18 +1,34 @@
 :lipstick: electron-react-redux-boilerplate :lipstick:
 ===============
 
-## Overview
+## はじめに
 
 Node.js + Babel 6 + React + Redux + Webpack + Gulp + Electron
 
+Electronを母体として、React・Reduxを使ったフロントエンドのアーキテクチャについて試したことをメモメモ
+
+Webpackはbrowserifyとしか使っていません
+
 ## Electron
+
+最近はやりのElectron（MacやWindowsのアプリ化）を使った場合の開発の仕方や、どうやるのが効率的かを少しずつメモしていきます
+
+現時点では、アプリのリリースやアップデートに関しては未調査になります
 
 ### Livereload
 
-1. RendererProcessで読み込んでいるコードが変更されたら, 画面をreload.
-1. BrowserProcess(MainProcess, main.jsなど)で動作するコードが変更されたら, RendererProcessもろともBrowserProcessを再起動
+まずは **Livereload** これがないとはじまりません
+
+以下の記事を参考に、gulpのタスクを作ってみました
+
+[ぼくのかんがえたさいきょうのElectron - Qiita](http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d)
+
+> 1. RendererProcessで読み込んでいるコードが変更されたら, 画面をreload.
+> 1. BrowserProcess(MainProcess, main.jsなど)で動作するコードが変更されたら, RendererProcessもろともBrowserProcessを再起動
 
 使ったnpmモジュールは、[Quramy/electron-connect](https://github.com/Quramy/electron-connect)です。
+
+#### gulpのタスク
 
 ```javascript
 import gulp from 'gulp';
@@ -25,8 +41,6 @@ const config = configs.electron;
 
 import electronConnect from 'electron-connect';
 const electron = electronConnect.server.create();
-
-// via http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d
 
 gulp.task('serve', function () {
   // Electronの起動
@@ -46,14 +60,14 @@ gulp.task('serve', function () {
 });
 ```
 
+#### htmlファイル
+
 ```html
 <!-- gulp側で立てたserverへ接続する -->
 <script>require('electron-connect').client.create()</script>
 ```
 
 このhtmlは本番環境では不要なので、[gulp-useref](https://www.npmjs.com/package/gulp-useref)などで消去するとよい
-
-via [http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d](http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d)
 
 ## React / Flux
 
@@ -65,64 +79,49 @@ via [http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d](http://qiita.com/Quramy
   <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-flux-unidir-ui-arch.jpg">
 </p>
 
-one-way data flow
-
 via [React.js architecture - Flux VS Reflux](http://blog.krawaller.se/posts/react-js-architecture-flux-vs-reflux/)
 
+ここでは、Fluxについてはふれません
+
+詳しくは、[facebook/flux](https://github.com/facebook/flux) などをお読みください
+
 ## React / Redux
+
+今回の目玉です
+
+**WordPress.com** が **Redux** を使って全面リニューアルしたようなので、大規模で使われた良い例なのではないでしょうか
+
+しかも、OSSです
+
+[Automattic/wp-calypso](https://github.com/Automattic/wp-calypso)
 
 <p align="center">
   <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-redux-unidir-ui-arch.jpg">
 </p>
-redux-unidir-ui-arch.jpg
 
-### Entry Point
+まずはこの図を見て、なんとなく処理がどうながれるか確認しておきましょう
 
 [Read Me | Redux](http://redux.js.org/index.html)
 
-### Action Creators and Constants
+また、このリポジトリのサンプルコードは、routingを組み込んだ状態になります
 
-<Provider>
+なので、routingを組み込まない場合のReduxの書き方は少し違いますが、以下の内容と合わせて読んでいけば理解できるかと思います
 
-ルートのコンポーネントとしてreactコンポーネントをラップする
+ざっくりと、ReactとReduxを接続する手順としては、
 
-propsとしてstoreを受け取りreduxのオブジェクトに登録する
+1. rootのcomponentを **<provider>** でwrapする
+1. wrapしたcomponentを[rackt/react-redux](https://github.com/rackt/react-redux)のconnectメソッドでReactとReduxをつなぐ
+1. connect()することで、actionがpropに、storeがpropとして受け取れるようになる
 
-渡されたstoreはconnect()でラップされたコンポーネントを通じて共有される
+では、順番に見ていきましょう
 
-### Reducers
+### Entry Point
 
-reduxではstateをreduxオブジェクトが内部的に管理する
+Entry Pointはまさに一番rootに位置するコードで、最も親の部分になります
 
-よくあるfluxのstoreのstateを変更する部分(callbacks)のみを切り出したのがreducer
+以下のサンプルコードたちは、シンプルで理解しやすい、
 
-reducerは現在のstateとactionを受け取り、新しいstateを返す関数
-
-reducerは、アプリケーションの規模に応じてstateを部分的に担当するreducerとして分割することもできる
-
-stateの部分毎に複数のreducerに分担する場合は、combineReducers()を利用すると便利
-
-[JavaScript - Reduxにおけるreducer分割とcombineReducersについて - Qiita](http://qiita.com/kuy/items/59c6d7029a10972cba78)
-
-### Container Components
-
-<Provider>でwrapするrootとなるcomponent
-
-### Presentational Components
-
-各パーツごとのcomponents
-
-TODOアプリをReduxでつなぐチュートリアル
-
-[Usage with React | Redux](http://rackt.org/redux/docs/basics/UsageWithReact.html)
-
-ReactとReduxを接続する手順としては、
-
-1. rootのcomponentを **<provider>** でwrapする（react-redux/Provider）
-1. wrapしたcomponentを[rackt/react-redux](https://github.com/rackt/react-redux)のconnect関数でReactとReduxを接続する
-1. connect()することで、dispatch関数がpropにレシーブされ、stateとstore.getState()がbindされる
-
-サンプルのソースコード: [Example: Todo List | Redux](http://rackt.org/redux/docs/basics/ExampleTodoList.html)
+[redux/examples/counter at master · rackt/redux](https://github.com/rackt/redux/tree/master/examples/counter) を引用しています
 
 ```javascript
 import React from 'react'
@@ -141,7 +140,16 @@ render(
 )
 ```
 
-[redux/index.js at master · rackt/redux](https://github.com/rackt/redux/blob/master/examples/counter/index.js)
+ここで大切なのが **<Provider>** です
+
+1. rootのcomponentとしてReactコンポーネントをwrapします
+
+1. propsとしてstoreを受け取りReduxのオブジェクトに登録する
+
+### Container Components
+
+1. 渡されたstoreはconnect()でwrapされたcomponentを通じて共有される
+1. connectで以下のようにcomponentに接続することでcomponentのpropsにstateとactionが渡される
 
 ```javascript
 import { bindActionCreators } from 'redux'
@@ -162,15 +170,181 @@ function mapDispatchToProps(dispatch) {
 export default connect(mapStateToProps, mapDispatchToProps)(Counter)
 ```
 
+### Action Creators and Constants
+
+actionでは、
+
+    bindActionCreators(CounterActions, dispatch)
+
+でactionをbindすることで、この後、reducerに値が流れるようになります
+
+また、Ajaxなどの非同期処理はここでやるのがよさそうです
+
+非同期処理は、Reduxそのままだけではうまく動かないので、下のほうで説明している **redux-thunk** を使う必要があります
+
+actionでは、何をしたいかをreducerに伝えるのみにし、アプリケーションの状態を変えるようなことはしないほうが設計的によさそうです
+
+```javascript
+export const INCREMENT_COUNTER = 'INCREMENT_COUNTER'
+export const DECREMENT_COUNTER = 'DECREMENT_COUNTER'
+
+export function increment() {
+  return {
+    type: INCREMENT_COUNTER
+  }
+}
+
+export function decrement() {
+  return {
+    type: DECREMENT_COUNTER
+  }
+}
+
+
+// action creaters
+export function incrementIfOdd() {
+  return (dispatch, getState) => {
+    const { counter } = getState()
+
+    if (counter % 2 === 0) {
+      return
+    }
+
+    dispatch(increment())
+  }
+}
+
+export function incrementAsync(delay = 1000) {
+  return dispatch => {
+    setTimeout(() => {
+      dispatch(increment())
+    }, delay)
+  }
+}
+```
+
+### Reducers
+
+reducerでは、前のstateとactionより次のstateを計算してstoreに渡します
+
+ここは、ただそれだけ徹する必要があります、そうでないと、設計がグチャグチャになってしまいます
+
+```javascript
+import { INCREMENT_COUNTER, DECREMENT_COUNTER } from '../actions/counter'
+
+export default function counter(state = 0, action) {
+  switch (action.type) {
+    case INCREMENT_COUNTER:
+      return state + 1
+    case DECREMENT_COUNTER:
+      return state - 1
+    default:
+      return state
+  }
+}
+```
+
+reduxではstateをreduxオブジェクトが内部的に管理するため、一般的なモデルのようにgetter / setterを用意したりはしません
+
+また、reducerは、アプリケーションの規模に応じて、細かく分割もできます
+
+つまり、画面ごとに使うreducerを選んで、使うこともできます
+
+その場合は **combineReducers** を使って、使いたいreducerを選びます
+
+```javascript
+import { routerStateReducer as router } from 'redux-router'
+import { combineReducers } from 'redux'
+import counter from './counter'
+import errorMessage from './errorMessage'
+
+const rootReducer = combineReducers({
+  counter,
+  errorMessage,
+  router
+})
+
+export default rootReducer
+```
+
+[JavaScript - Reduxにおけるreducer分割とcombineReducersについて - Qiita](http://qiita.com/kuy/items/59c6d7029a10972cba78)
+
+### Presentational Components
+
+いわゆるパーツごとのcomponent部分です
+
+たとえば、headerやfooterなど、親のcomponentが使いやすいような単位に分割する部分です
+
+```javascript
+import React, { Component, PropTypes } from 'react'
+
+class Counter extends Component {
+  render() {
+    const { increment, incrementIfOdd, incrementAsync, decrement, counter } = this.props
+    return (
+      <p>
+        Clicked: {counter} times
+        {' '}
+        <button onClick={increment}>+</button>
+        {' '}
+        <button onClick={decrement}>-</button>
+        {' '}
+        <button onClick={incrementIfOdd}>Increment if odd</button>
+        {' '}
+        <button onClick={() => incrementAsync()}>Increment async</button>
+      </p>
+    )
+  }
+}
+
+Counter.propTypes = {
+  increment: PropTypes.func.isRequired,
+  incrementIfOdd: PropTypes.func.isRequired,
+  incrementAsync: PropTypes.func.isRequired,
+  decrement: PropTypes.func.isRequired,
+  counter: PropTypes.number.isRequired
+}
+
+export default Counter
+```
+
+### Smart ComponentsとDumb Components
+
+このリポジトリのコードでもそうですが、 **containers** と **components** が分かれているところについて少し書きます
+
+これは、Reactにかぎらずですが、この手のアーキテクチャを組む場合、2層構造のcomponentを使うことが多いです
+
+それは親componentと子componentという感じです
+
+以下の記事では、それをSmart ComponentsとDumb Componentsと呼んでいてなるほどなーと思いました
+
+Reduxでは **container** が **Smart Components** で **components** が **Dumb Components** になります
+
+> Reduxとの依存を切り離す
+> Smart ComponentsはReduxとの依存関係を持つ
+> Dumb ComponentsはSmart Componentsからprops経由で全てを受け取るようにする
+
+[Reduxの設計で気をつけるところ - なっく日報](http://yukidarake.hateblo.jp/entry/2015/09/18/204023)
+
+この設計思想は、これからもとても大切な考え方なので、きちっと実装していきたいですね
+
 ### connect()
 
-connectメソッドを使って、共通のpropsを持つ親コンポーネントを作れる connectメソッドを使ってラップされたコンポーネントはdispatch, props, state を受け取ることができるようになる ラップしたコンポーネントが対象、子孫コンポーネントには共有されない 計画なくどの階層のコンポーネントでもラップしてしまうと 各コンポーネントのコミュニケーションの流れが壊れるのでラップしすぎないように注意が必要
+> connectメソッドを使って、共通のpropsを持つ親コンポーネントを作れる
 
-Reduxのグローバルな状態とコンポーネントのプロパティをマップする関数と、コンポーネントのプロパティをReduxのActionにマップする関数がある
+> connectメソッドを使ってラップされたコンポーネントはdispatch, props, state を受け取ることができるようになる
 
-redux#bindActionCreators()はActionを返すメソッド群をそれぞれdispatch()でラップし、さらに1つのオブジェクトにまとめあげるユーティリティ
+> ラップしたコンポーネントが対象、子孫コンポーネントには共有されない
 
-[redux/App.js at master · rackt/redux](https://github.com/rackt/redux/blob/master/examples/counter/containers/App.js)
+> 計画なくどの階層のコンポーネントでもラップしてしまうと 各コンポーネントのコミュニケーションの流れが壊れるのでラップしすぎないように注意が必要
+
+[fluxフレームワークreduxについてドキュメントを読んだメモ - fukajun - 僕はvimで行きます -](http://fukajun.org/66)
+
+> Reduxのグローバルな状態とコンポーネントのプロパティをマップする関数と、コンポーネントのプロパティをReduxのActionにマップする関数がある
+
+> redux#bindActionCreators()はActionを返すメソッド群をそれぞれdispatch()でラップし、さらに1つのオブジェクトにまとめあげるユーティリティ
+
+[reduxを試してみた(2日目) - React.jsを学ぶ - Qiita](http://qiita.com/kompiro/items/7fe90c4abc92fd32b343)
 
 ### bindActionCretors()
 
@@ -271,9 +445,47 @@ export default connect(
 
 ## Redux Router
 
-react-routerの機能は十分だが、現在表示しているページという"状態"がアプリケーションに登場する。これもできればstoreに押し込めたい。ということで登場したライブラリ
+> react-routerの機能は十分だが、現在表示しているページという"状態"がアプリケーションに登場する
+> これもできればstoreに押し込めたい。ということで登場したライブラリ
+
+[JavaScript - reduxを試してみた(4日目) - redux-react-routerを試す - Qiita](http://qiita.com/kompiro/items/de10197368f864c2e846)
 
 [rackt/redux-router](https://github.com/rackt/redux-router)
+
+故に、configureStore.jsで
+
+const finalCreateStore = compose(
+  applyMiddleware(thunk, logger()),
+  reduxReactRouter({ routes, createHistory }),
+  applyMiddleware(createLogger()),
+  DevTools.instrument()
+)(createStore)
+
+のように渡す必要がある
+
+はじめ、なんでroutingをstore部分に書いているのかわからなかったんですが、storeで管理して、routingが変更されたらそれがstoreから渡ってくるようにしたいがためにやっていたんですね
+
+## 雑感
+
+## 参考記事
+
+[reduxとfluxを比べてみたときの個人的な感想](http://www.slideshare.net/ssusera7b1a1/reduxflux)
+
+[JavaScript - reduxを試してみた(4日目) - redux-react-routerを試す - Qiita](http://qiita.com/kompiro/items/de10197368f864c2e846)
+
+[ReduxとES6でReact.jsのチュートリアルの写経 - bokuweb.me](http://blog.bokuweb.me/entry/redux-tutorial)
+
+[reduxを試してみた(5日目) - ajaxを使ってUIを構築する(reduxにおける非同期の制御) - Qiita](http://qiita.com/kompiro/items/d1ffcfcba7cc34d364f0)
+
+## Others
+
+Mac風のUIを作れるフレームワーク
+
+[Photon](http://photonkit.com/)
+
+Wordpress.comがReact/Reduxを使って全面アップデートしたOSSプロジェクト
+
+[Automattic/wp-calypso](https://github.com/Automattic/wp-calypso)
 
 ## Tools
 
@@ -300,10 +512,14 @@ and
 
     bundle install  --path vendor/bundle
 
-run a gulp
+run a web
 
     npm run local
 
+run a electron
+
+    npm run electron
+    
 if you want to release build.
 
     npm run product
