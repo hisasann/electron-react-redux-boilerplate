@@ -11,7 +11,7 @@ const electron = electronConnect.server.create();
 
 // via http://qiita.com/Quramy/items/90d61ff37ca1b95a7f6d
 
-gulp.task('serve', function () {
+gulp.task('electron-serve', function () {
   // Electronの起動
   electron.start();
 

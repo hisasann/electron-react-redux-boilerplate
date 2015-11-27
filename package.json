@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "local": "gulp local",
+    "electron": "gulp electron",
     "product": "gulp product"
   },
   "engines": {
