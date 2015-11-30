@@ -1,5 +1,5 @@
 {
-  "name": "express-browserSync-boilerplate",
+  "name": "electron-react-redux-boilerplate",
   "version": "1.0.0",
   "moduleType": [
     "amd",
