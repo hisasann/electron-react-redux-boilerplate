@@ -1,4 +1,4 @@
-:lipstick: electron-react-redux-boilerplate :lipstick:
+:two_women_holding_hands: electron-react-redux-boilerplate :two_women_holding_hands:
 ===============
 
 ## はじめに
