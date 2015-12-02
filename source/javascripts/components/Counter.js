@@ -21,6 +21,7 @@ class Counter extends Component {
 
   render() {
     const { increment, incrementIfOdd, incrementAsync, decrement, counter, pathname } = this.props;
+    const { loadUser } = this.props;
 
     return (
       <div>
@@ -36,9 +37,14 @@ class Counter extends Component {
         {' '}
         <button onClick={() => incrementAsync()}>Increment async</button>
         {' '}
-        <button onClick={this.routing}>routing</button>
-        {' '}
-        <Link to='/routing'>routing</Link>
+        <p>
+          <button onClick={this.routing}>routing</button>
+          {' '}
+          <Link to='/routing'>routing</Link>
+        </p>
+        <p>
+          <button onClick={loadUser}>loadUser</button>
+        </p>
       </div>
     )
   }

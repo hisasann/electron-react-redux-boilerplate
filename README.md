@@ -13,7 +13,7 @@ Webpackはbrowserifyとしか使っていません
 
 最近はやりのElectron（MacやWindowsのアプリ化）を使った場合の開発の仕方や、どうやるのが効率的かを少しずつメモしていきます
 
-現時点では、アプリのリリースやアップデートに関しては未調査になります
+現時点では、Electronでビルドしたアプリのリリースやアップデートに関しては未調査になります
 
 ### Livereload
 
@@ -227,7 +227,7 @@ export function incrementAsync(delay = 1000) {
 
 reducerでは、前のstateとactionより次のstateを計算してstoreに渡します
 
-ここは、ただそれだけ徹する必要があります、そうでないと、設計がグチャグチャになってしまいます
+ここは、ただそれだけに徹する必要があります、そうでないと、設計がグチャグチャになってしまいます
 
 ```javascript
 import { INCREMENT_COUNTER, DECREMENT_COUNTER } from '../actions/counter'
@@ -251,6 +251,10 @@ reduxではstateをreduxオブジェクトが内部的に管理するため、�
 つまり、画面ごとに使うreducerを選んで、使うこともできます
 
 その場合は **combineReducers** を使って、使いたいreducerを選びます
+
+combineReducersに渡したreducerが、actionでgetState()できるstateになるようです
+
+なので、渡す名前をミスすると、アプリケーションがうまく動きません
 
 ```javascript
 import { routerStateReducer as router } from 'redux-router'
@@ -443,6 +447,8 @@ export default connect(
 
 こうすればいける
 
+[React初心者のためのreact-routerの使い方 - ハッカーを目指す白Tのブログ](http://beck23.hatenablog.com/entry/2015/02/20/054900)
+
 ## Redux Router
 
 > react-routerの機能は十分だが、現在表示しているページという"状態"がアプリケーションに登場する
@@ -464,6 +470,118 @@ const finalCreateStore = compose(
 のように渡す必要がある
 
 はじめ、なんでroutingをstore部分に書いているのかわからなかったんですが、storeで管理して、routingが変更されたらそれがstoreから渡ってくるようにしたいがためにやっていたんですね
+
+## middleware
+
+**middleware** はまだあまり調べられていませんが、 [redux/examples/real-world at master · rackt/redux](https://github.com/rackt/redux/tree/master/examples/real-world) を参考にシンプルバージョンで解説してみます
+
+このサンプルでは、apiにリクエストする部分をmiddlewareとして作っているようで、その呼び出し方も特徴的です
+
+まずはmiddlewareのapi.jsから（すごくシンプルにしてあります）
+
+### api.js
+
+```javascript
+function callApi() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('success')
+    }, 1000)
+  })
+}
+
+// Action key that carries API call info interpreted by this Redux middleware.
+export const CALL_API = Symbol('hisasann')
+
+// A Redux middleware that interprets actions with CALL_API info specified.
+// Performs the call and promises when such actions are dispatched.
+export default store => next => action => {
+  console.log('api: ', action);
+  const callAPI = action[CALL_API]
+
+  if (typeof callAPI === 'undefined') {
+    return next(action)
+  }
+
+  const { types } = callAPI
+
+  function actionWith(data) {
+    const finalAction = Object.assign({}, action, data)
+    delete finalAction[CALL_API]
+    return finalAction
+  }
+
+  const [ requestType, successType, failureType ] = types
+  next(actionWith({ type: requestType }))
+
+  return callApi().then(
+    (response) => {
+      next(actionWith({
+        type: successType,
+        message: response
+      }))
+    },
+    (error) => {
+      next(actionWith({
+        type: failureType
+      }))
+    })
+}
+```
+
+重要な箇所は、
+
+```javascript
+export default store => next => action => {
+```
+
+で、この形式がmiddlewareを自作するときに必要な関数になります
+
+### configureStore.js
+
+そしてこの関数を **applyMiddleware** に渡すことで、一連のreduxフローの中に組み込むことができるようになります
+
+```javascript
+import api from '../middleware/api'
+
+const finalCreateStore = compose(
+  applyMiddleware(thunk, api)
+)(createStore)
+```
+
+### action.js
+
+はじめ、この部分の理解が難しかったです
+
+return で渡しているものはただのオブジェクトで、実際にリクエスト処理を呼び出している感がなかったからです
+
+```javascript
+function fetchUser() {
+  return {
+    [CALL_API]: {
+      types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ]
+    }
+  }
+}
+
+export function loadUser() {
+  return (dispatch, getState) => {
+    return dispatch(fetchUser())
+  }
+}
+```
+
+実際に読み解くとシンプルで、applyMiddlewareで登録したmiddlewareはactionでreturnされた後に介入できるので、
+
+そのタイミングで、先ほどの
+
+```javascript
+export default store => next => action => {
+```
+
+この部分が呼ばれるので、あとは、**[CALL_API]** で判定して必要な処理を実行しています
+
+middlewareのタイミングでapi処理をするのが適切なのか、ちょっとまだわからないですが、reduxのアーキテクチャ上、確かにここでやるのもアリな気がします
 
 ## 雑感
 

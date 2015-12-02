@@ -9,7 +9,7 @@ class Root extends Component {
     return (
       <Provider store={store}>
         <div>
-          <ReduxRouter />
+          <ReduxRouter store={store}/>
           <DevTools />
         </div>
       </Provider>

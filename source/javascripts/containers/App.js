@@ -11,6 +11,7 @@ class App extends Component {
   render() {
     const { pushState, increment, incrementIfOdd, incrementAsync, decrement, counter, pathname } = this.props;
     const { errorMessage, resetErrorMessage, showErrorMessage, showErrorMessageDelayed } = this.props;
+    const { loadUser } = this.props;
 
     return (
       <div>
@@ -21,7 +22,9 @@ class App extends Component {
           incrementAsync={incrementAsync}
           decrement={decrement}
           counter={counter}
-          pathname={pathname}/>
+          pathname={pathname}
+          loadUser={loadUser}
+          />
         <Error
           errorMessage={errorMessage}
           resetErrorMessage={resetErrorMessage}
@@ -41,10 +44,12 @@ App.propTypes = {
   decrement: PropTypes.func.isRequired,
   counter: PropTypes.number.isRequired,
   pathname: PropTypes.string.isRequired,
-  errorMessage: PropTypes.string
+  errorMessage: PropTypes.string,
+  loadUser: PropTypes.func.isRequired
 }
 
-
+// ここはstateが変わったタイミングで動く
+// なので画面ロード時は動かない
 function mapStateToProps(state) {
   return {
     counter: state.counter,
@@ -54,6 +59,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
+  // bindActionCreatorsを呼ぶと、dispatchが勝手にbindされなくなる
+  // つまり this.props.dispatch で取得できなくなる
+  // bindActionCreatorsを使わない場合は、dispatchを受け取り、Appコンポーネント側でdispatch()でActionを呼び出す必要がある
+  // http://rackt.org/redux/docs/basics/UsageWithReact.html
+
   // {pushState} https://github.com/rackt/redux-router/issues/79
   return bindActionCreators(_.assign(CounterActions, ErrorActions, {pushState}), dispatch)
 }

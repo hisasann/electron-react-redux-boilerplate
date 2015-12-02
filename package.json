@@ -14,6 +14,9 @@
   },
   "dependencies": {
     "history": "^1.13.1",
+    "humps": "^1.0.0",
+    "isomorphic-fetch": "^2.2.0",
+    "normalizr": "^1.4.0",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-redux": "^4.0.0",
