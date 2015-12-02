@@ -72,11 +72,11 @@ gulp.task('serve', function () {
 ## React / Flux
 
 <p align="center">
-  <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-flux-diagram.png">
+  <img src="https://raw.githubusercontent.com/hisasann/electron-react-redux-boilerplate/master/image-flux-diagram.png">
 </p>
 
 <p align="center">
-  <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-flux-unidir-ui-arch.jpg">
+  <img src="https://raw.githubusercontent.com/hisasann/electron-react-redux-boilerplate/master/image-flux-unidir-ui-arch.jpg">
 </p>
 
 via [React.js architecture - Flux VS Reflux](http://blog.krawaller.se/posts/react-js-architecture-flux-vs-reflux/)
@@ -96,7 +96,7 @@ via [React.js architecture - Flux VS Reflux](http://blog.krawaller.se/posts/reac
 [Automattic/wp-calypso](https://github.com/Automattic/wp-calypso)
 
 <p align="center">
-  <img src="http://raw.github.team-lab.local/yhisamatsu/electron-react-redux-boilerplate/master/image-redux-unidir-ui-arch.jpg">
+  <img src="https://raw.githubusercontent.com/hisasann/electron-react-redux-boilerplate/master/image-redux-unidir-ui-arch.jpg">
 </p>
 
 まずはこの図を見て、なんとなく処理がどうながれるか確認しておきましょう
