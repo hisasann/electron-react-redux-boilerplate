@@ -47,5 +47,9 @@ app.on('ready', function() {
     mainWindow = null;
   });
 
+  // fullscreen
+  // via http://sourcechord.hatenablog.com/entry/2015/11/12/001228
+  //mainWindow.setKiosk(true);
+
   console.log('!electron start!');
 });
