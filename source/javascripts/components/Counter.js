@@ -16,7 +16,7 @@ class Counter extends Component {
   }
 
   routing() {
-    this.props.pushState(null, './routing')
+    this.props.pushState(null, '/routing')
   }
 
   render() {
@@ -40,7 +40,7 @@ class Counter extends Component {
         <p>
           <button onClick={this.routing}>routing</button>
           {' '}
-          <Link to='./routing'>routing</Link>
+          <Link to='/routing'>routing</Link>
         </p>
         <p>
           <button onClick={loadUser}>loadUser</button>
