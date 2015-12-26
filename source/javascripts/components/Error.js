@@ -58,6 +58,7 @@ class Error extends Component {
       <div>
         {this.renderErrorMessage()}
         {this.renderSample()}
+        <a href='./index.html'>index.html</a>
       </div>
     )
   }
